@@ -2,7 +2,7 @@ import SwiftUI
 
 
 
-struct MainTabView: View {
+struct DashboardView: View {
     var body: some View {
         TabView {
             // Home Tab
