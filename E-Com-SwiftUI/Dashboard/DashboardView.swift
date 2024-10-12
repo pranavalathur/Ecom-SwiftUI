@@ -80,6 +80,6 @@ struct AccountsView: View {
 }
 
 #Preview {
-    MainTabView()
+    DashboardView()
 }
 

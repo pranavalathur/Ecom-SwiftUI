@@ -16,16 +16,28 @@ class HomeScreenViewModel: ObservableObject {
 
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             guard let data = data else { return }
-            
+
             // Decode API response
             let decoder = JSONDecoder()
             do {
-                let response = try decoder.decode([Section].self, from: data)
+                var response = try decoder.decode([Section].self, from: data)
+                
+                // Generate unique ID for each section
+                for i in 0..<response.count {
+                    response[i].id = UUID().uuidString // Assign unique ID using UUID
+                    print("Unique Section ID: \(response[i].id)")
+                    print("Section Type: \(response[i].type)")
+                    if let title = response[i].title {
+                        print("Section Title: \(title)")
+                    }
+                }
                 
                 // Save to Core Data
                 self?.saveToCoreData(sections: response)
+                print("resss \(response)")
                 
                 DispatchQueue.main.async {
+                    self?.sections.removeAll()
                     self?.sections = response
                     self?.isLoading = false
                 }
@@ -35,6 +47,7 @@ class HomeScreenViewModel: ObservableObject {
         }
         task.resume()
     }
+
 
     func saveToCoreData(sections: [Section]) {
         // Clear existing data in Core Data
@@ -97,22 +110,4 @@ class HomeScreenViewModel: ObservableObject {
 }
 
 
-struct Section: Codable, Identifiable {
-    let id: String // Change from UUID to String
-    let type: String
-    let title: String?
-    let contents: [Content]?
-}
 
-struct Content: Codable, Identifiable {
-    let id: String? // Change from UUID to String
-    let title: String?
-    let image_url: String?
-    let sku: String?
-    let product_name: String?
-    let product_image: String?
-    let product_rating: Int?
-    let actual_price: String?
-    let offer_price: String?
-    let discount: String?
-}

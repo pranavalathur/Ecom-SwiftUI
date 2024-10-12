@@ -20,15 +20,13 @@ struct HomePageView: View {
                         ForEach(viewModel.sections, id: \.id) { section in
                             switch section.type {
                             case "banner_slider":
-                                BannerSliderView(banners: section.contents ?? [])
+                                BannerSliderView(banner: section.contents ?? [])
                             case "products":
                                 ProductsSectionView(title: section.title ?? "", products: section.contents ?? [])
                             case "catagories":
                                 CategoriesSectionView(categories: section.contents ?? [])
                             case "banner_single":
-                                if let imageUrl = section.contents?.first?.image_url {
-                                    SingleBannerView(imageUrl: imageUrl)
-                                }
+                                    SingleBannerView(imageUrl: section.contents?.first?.image_url ?? "")
                             default:
                                 EmptyView()
                             }
@@ -57,7 +55,7 @@ struct HeaderView: View {
                 Button(action: {
                     // Handle bell action
                 }) {
-                    Image(systemName: "bell")
+                    Image(systemName: "cart")
                         .resizable()
                         .scaledToFit() // Ensures the icon scales to fit its frame
                         .frame(width: 25, height: 25) // Increase size of the bell icon
@@ -81,7 +79,7 @@ struct HeaderView: View {
                 Button(action: {
                     // Handle cart action
                 }) {
-                    Image(systemName: "cart")
+                    Image(systemName: "bell")
                         .resizable()
                         .scaledToFit() // Ensures the icon scales to fit its frame
                         .frame(width: 25, height: 25) // Increase size of the cart icon
@@ -97,37 +95,7 @@ struct HeaderView: View {
 }
 
 
-struct BannerSliderView: View {
-    let banners: [Content]
-    @State private var currentPage = 0 // State variable to track the current page
 
-    var body: some View {
-        VStack {
-            TabView(selection: $currentPage) { // Bind currentPage to TabView
-                ForEach(banners.indices, id: \.self) { index in
-                    if let imageUrl = banners[index].image_url {
-                        AsyncImage(url: URL(string: imageUrl)) { image in
-                            image
-                                .resizable()
-                                .scaledToFit()
-                        } placeholder: {
-                            Image("banner-image-ph") // Placeholder from assets
-                                .resizable()
-                                .scaledToFit()
-                        }
-                        .tag(index) // Tag each view with its index
-                    }
-                }
-            }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // Disable default page indicator
-            .frame(height: 200)
-            
-            // Custom Page Control
-            PageControl(currentPage: $currentPage, numberOfPages: banners.count)
-                .frame(width: CGFloat(banners.count * 15)) // Adjust width based on number of pages
-        }
-    }
-}
 
 // Custom PageControl to handle the colors of the dots
 struct PageControl: UIViewRepresentable {
@@ -165,132 +133,9 @@ struct PageControl: UIViewRepresentable {
 }
 
 
-
-
-
-
-struct ProductsSectionView: View {
-    let title: String
-    let products: [Content]
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(products) { product in
-                        VStack {
-                            if let imageUrl = product.product_image {
-                                AsyncImage(url: URL(string: imageUrl)) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFit()
-                                } placeholder: {
-                                    Image("product-ph") // Placeholder from assets
-                                        .resizable()
-                                        .scaledToFit()
-                                }
-                                .frame(width: 100, height: 100)
-                            }
-                            Text(product.product_name ?? "")
-                                .font(.caption)
-                                .lineLimit(2)
-                            Text(product.offer_price ?? "")
-                                .font(.headline)
-                        }
-                        .frame(width: 150)
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-}
-
-struct SingleBannerView: View {
-    let imageUrl: String
-    
-    var body: some View {
-        AsyncImage(url: URL(string: imageUrl)) { image in
-            image
-                .resizable()
-                .scaledToFit()
-        } placeholder: {
-            Image("single-banner-ph") // Placeholder from assets
-                .resizable()
-                .scaledToFit()
-        }
-        .frame(height: 150)
-        .padding(.horizontal)
-    }
-}
-
-
-struct CategoriesSectionView: View {
-    let categories: [Content]
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("Top Categories")
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(categories) { category in
-                        VStack {
-                            if let imageUrl = category.image_url {
-                                AsyncImage(url: URL(string: imageUrl)) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFit()
-                                } placeholder: {
-                                    Image("product-ph") // Placeholder from assets
-                                        .resizable()
-                                        .scaledToFit()
-                                }
-                                .frame(width: 50, height: 50)
-                            }
-                            Text(category.title ?? "")
-                                .font(.caption)
-                        }
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-}
-
-
-
 struct HomePageView_Previews: PreviewProvider {
     static var previews: some View {
         HomePageView()
     }
 }
-
-// Fetch terms and conditions
-//func fetchTermsAndConditions() {
-//    viewModel.fetchHomeScreenDetails()
-//    viewModel.homeScreenDataFetchSuccess = {
-//        print("Success")
-//        homeScreenDetails = viewModel.homeScreenRes
-//    }
-//    viewModel.errorMessageAlert = {
-//        // Handle error
-//    }
-//    viewModel.loadingStatus = {
-//        if viewModel.isLoading {
-//            // Show loading indicator
-//        } else {
-//            // Hide loading indicator
-//        }
-//    }
-//}
 

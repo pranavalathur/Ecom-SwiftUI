@@ -11,7 +11,7 @@ import SwiftUI
 struct E_Com_SwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            DashboardView()
         }
     }
 }
